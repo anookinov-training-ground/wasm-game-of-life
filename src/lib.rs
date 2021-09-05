@@ -16,6 +16,8 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 //     fn alert(s: &str);
 // }
 
+extern crate js_sys;
+
 // #[wasm_bindgen]
 // pub fn greet() {
 //     alert("Hello, wasm-game-of-life!");
@@ -45,7 +47,12 @@ impl Universe {
 
         let cells = (0..width * height)
             .map(|i| {
-                if i % 2 == 0 || i % 7 == 0 {
+                // if i % 2 == 0 || i % 7 == 0 {
+                //     Cell::Alive
+                // } else {
+                //     Cell::Dead
+                // }
+                if js_sys::Math::random() < 0.5 {
                     Cell::Alive
                 } else {
                     Cell::Dead
