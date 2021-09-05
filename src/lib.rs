@@ -20,6 +20,14 @@ extern crate js_sys;
 extern crate fixedbitset;
 use fixedbitset::FixedBitSet;
 
+extern crate web_sys;
+
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
 // #[wasm_bindgen]
 // pub fn greet() {
 //     alert("Hello, wasm-game-of-life!");
@@ -45,8 +53,10 @@ pub struct Universe {
 #[wasm_bindgen]
 impl Universe {
     pub fn new() -> Universe {
-        let width = 6;
-        let height = 6;
+        utils::set_panic_hook();
+
+        let width = 64;
+        let height = 64;
 
         let size = (width * height) as usize;
         let mut cells = FixedBitSet::with_capacity(size);
@@ -111,7 +121,15 @@ impl Universe {
                 let cell = self.cells[idx];
                 let live_neighbors = self.live_neighbor_count(row, col);
 
-                next.set(idx, match (cell, live_neighbors) {
+                log!(
+                    "cell[{}, {}] is initially {:?} and has {} live neighbors",
+                    row,
+                    col,
+                    cell,
+                    live_neighbors
+                );
+
+                let next_cell = match (cell, live_neighbors) {
                     // Rule 1: Any live cell with fewer than two live neighbours
                     // dies, as if caused by underpopulation.
                     (true, x) if x < 2 => false,
@@ -126,7 +144,11 @@ impl Universe {
                     (false, 3) => true,
                     // All other cells remain in the same state.
                     (otherwise, _) => otherwise,
-                });
+                };
+
+                next.set(idx, next_cell);
+
+                log!("  it becomes {:?}", next_cell);
             }
         }
 
