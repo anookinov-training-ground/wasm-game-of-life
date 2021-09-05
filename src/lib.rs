@@ -33,13 +33,22 @@ macro_rules! log {
 //     alert("Hello, wasm-game-of-life!");
 // }
 
-#[wasm_bindgen]
-#[repr(u8)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Cell {
-    Dead = 0,
-    Alive = 1,
-}
+// #[wasm_bindgen]
+// #[repr(u8)]
+// #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+// pub enum Cell {
+//     Dead = 0,
+//     Alive = 1,
+// }
+
+// impl Cell {
+//     fn toggle(&mut self) {
+//         *self = match *self {
+//             Cell::Dead => Cell::Alive,
+//             Cell::Alive => Cell::Dead,
+//         };
+//     }
+// }
 
 #[wasm_bindgen]
 pub struct Universe {
@@ -109,6 +118,15 @@ impl Universe {
         
         for i in 0..size {
             self.cells.set(i, false)
+        }
+    }
+
+    pub fn toggle_cell(&mut self, row: u32, column: u32) {
+        let idx = self.get_index(row, column);
+        if self.cells[idx] == true {
+            self.cells.set(idx, false);
+        } else {
+            self.cells.set(idx, true);
         }
     }
 
